@@ -31,7 +31,7 @@ def import_data():
     
 #data: Rows(years) Columns (features)
 #Percent (ratio of sampling between Train and Test
-#Direction (boolean): TRUE Train data cut from ealier, FALSE Train data cut from later in history
+#Direction (boolean): True: Train data cut from ealier, False: Train data cut from later in history
 def sample_cut(data, percent, direction):
     cut = int(percent*data.shape[1])
     if (direction):
@@ -42,6 +42,16 @@ def sample_cut(data, percent, direction):
         test = data[:cut]
     return train, test
 
+
+def sample_random(data, percent, direction):
+    cut = int(percent*data.shape[1])
+    if (direction):
+        train = data[:cut]
+        test = data[cut:]
+    else:
+        train = data[cut:]
+        test = data[:cut]
+    return train, test
 		
 years = get_volcano_years()
 print years
@@ -49,4 +59,4 @@ print years
 data = import_data()
 
 #print data[words.index('volcanos'), 1756-begin_yr]
-
+train, test = sample_random(data, 0.01, True)
