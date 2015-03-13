@@ -44,7 +44,7 @@ def sample_cut(data, percent, direction):
 
 
 def sample_random(data, percent, direction):
-    cut = int(percent*data.shape[1])
+    cut = int(percent*data.shape[0])
     if (direction):
         train = data[:cut]
         test = data[cut:]
@@ -59,4 +59,4 @@ print years
 data = import_data()
 
 #print data[words.index('volcanos'), 1756-begin_yr]
-train, test = sample_random(data, 0.01, True)
+train, test = sample_random(data, 0.1, True)
