@@ -20,14 +20,27 @@ def get_volcano_years():
 def import_data():
     total_yrs = 1+ end_yr - begin_yr
     word_count = len(words)
-    data = np.zeros((word_count, total_yrs))
+    data = np.zeros((total_yrs, word_count))
     with open('word_data.csv', 'rb') as fp:
         reader = csv.reader(fp, delimiter='\t')
         for row in reader:
             #print row
-            data[words.index(row[0]), int(row[1])-begin_yr] = row[2]
+            data[int(row[1])-begin_yr, words.index(row[0])] = row[2]
     return data
     
+    
+#data: Rows(years) Columns (features)
+#Percent (ratio of sampling between Train and Test
+#Direction (boolean): TRUE Train data cut from ealier, FALSE Train data cut from later in history
+def sample_cut(data, percent, direction):
+    cut = int(percent*data.shape[1])
+    if (direction):
+        train = data[:cut]
+        test = data[cut:]
+    else:
+        train = data[cut:]
+        test = data[:cut]
+    return train, test
 
 		
 years = get_volcano_years()
