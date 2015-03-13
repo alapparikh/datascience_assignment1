@@ -3,7 +3,6 @@ import dateutil.parser as p
 import numpy as np
 import data_prep as dp
 from sklearn import preprocessing
-
 from sklearn import linear_model
 
 begin_yr = 1750
@@ -56,6 +55,30 @@ def sample_random(data, percent, direction):
         test = data[:cut]
     return train, test
 
+def train_model(train_matrix, target_vector):
+    
+    #Standardize features
+    scaler = preprocessing.StandardScaler().fit(train_matrix)
+    scaled_features = scaler.transform(train_matrix)
+
+    #Fit logistic regression model
+    classifier = linear_model.LogisticRegression(penalty='l2',dual='false')
+    classifier.fit(scaled_features,target_vector)
+
+    return logistic_classifier
+
+def test_model(classifier, test_matrix, target_vector):
+    correct_count = 0
+
+    #Standardize features
+    scaler = preprocessing.StandardScaler().fit(train_matrix)
+    scaled_features = scaler.transform(train_matrix)
+
+    predicted_eruptions = classifer.predict(test_matrix)
+    for i,eruption in enumerate(predicted_eruptions):
+        if eruption == target_vector[i]:
+            correct_count += 1.
+    return correct_count/len(target_vector)
 
 		
 years = get_volcano_years()
@@ -64,4 +87,6 @@ data = import_data()
 
 #print data[words.index('volcanos'), 1756-begin_yr]
 train, test = sample_cut(data, 0.1, True)
-
+classifier = train_model(train, train_target)
+accuracy = test_model(classifier, test, test_target)
+print accuracy
