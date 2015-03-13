@@ -2,6 +2,9 @@ import csv
 import dateutil.parser as p
 import numpy as np
 import data_prep as dp
+from sklearn import preprocessing
+
+from sklearn import linear_model
 
 begin_yr = 1750
 end_yr = 2008
@@ -33,7 +36,7 @@ def import_data():
 #Percent (ratio of sampling between Train and Test
 #Direction (boolean): True: Train data cut from ealier, False: Train data cut from later in history
 def sample_cut(data, percent, direction):
-    cut = int(percent*data.shape[1])
+   cut = int(percent*data.shape[0])
     if (direction):
         train = data[:cut]
         test = data[cut:]
@@ -52,11 +55,13 @@ def sample_random(data, percent, direction):
         train = data[cut:]
         test = data[:cut]
     return train, test
+
+
 		
 years = get_volcano_years()
 print years
-
 data = import_data()
 
 #print data[words.index('volcanos'), 1756-begin_yr]
-train, test = sample_random(data, 0.1, True)
+train, test = sample_cut(data, 0.1, True)
+
