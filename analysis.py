@@ -8,6 +8,7 @@ from sklearn import linear_model
 
 begin_yr = 1750
 end_yr = 2008
+total_yrs = 1+ end_yr - begin_yr
 words = dp.feature_words
 
 def get_volcano_years():
@@ -32,19 +33,34 @@ def import_data():
     return data
     
     
-#data: Rows(years) Columns (features)
+#data: Rows(features) Columns (years)
 #Percent (ratio of sampling between Train and Test
 #Direction (boolean): True: Train data cut from ealier, False: Train data cut from later in history
-def sample_cut(data, percent, direction):
-   cut = int(percent*data.shape[0])
-    if (direction):
+#Years: 
+def sample_cut(years, data, percent, direction):
+    targetVector = yearToTargetVector(years)
+    
+    #tmp = np.append(targetVector, 
+    cut = int(percent*data.shape[0])
+    
+    if direction:
         train = data[:cut]
+        train_target = targetVector[:cut]
         test = data[cut:]
+        test_target = targetVector[cut:]        
+
     else:
         train = data[cut:]
+        train_target = targetVector[cut:]
         test = data[:cut]
-    return train, test
+        test_target = targetVector[:cut]   
+    return train, train_target, test, test_target
 
+def yearToTargetVector(years):
+    tmp = np.zeros(total_yrs)
+    for year in years:
+        tmp[1+year-begin_yr] = 1
+    return tmp
 
 def sample_random(data, percent, direction):
     cut = int(percent*data.shape[0])
@@ -63,5 +79,5 @@ print years
 data = import_data()
 
 #print data[words.index('volcanos'), 1756-begin_yr]
-train, test = sample_cut(data, 0.1, True)
+train, train_target, test, test_target = sample_cut(years, data, 0.1, True)
 
