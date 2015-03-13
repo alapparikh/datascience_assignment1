@@ -1,0 +1,12 @@
+6	Guatemala Santa María	Central America Volcanic Arc	1902-10-24 AD	0.000112		
+5	New Zealand Mount Tarawera	Taupo Volcanic Zone	1886-06-10 AD	0.000128	
+6	Indonesia Krakatoa	Sunda Arc	1883-08-26 AD	0.000131	
+5	Nicaragua Cosigüina	Central America Volcanic Arc	1835-01-20 AD	0.000179	
+7	Indonesia Mount Tambora	Lesser Sunda Islands	1815-04-10 AD	0.000199	
+6?	Source unknown	Source unknown	1809 AD	0.000205	Undocumented 1809 eruption[2]
+6	Iceland Grímsvötn	Iceland	1783 AD	0.000231	Skaftáreldar at Laki
+6	Iceland Grímsvötn	Iceland	1784 AD	0.000231	Skaftáreldar at Laki
+6	Iceland Grímsvötn	Iceland	1785 AD	0.000231	Skaftáreldar at Laki
+6	Philippines Mount Pinatubo	Luzon Volcanic Arc	1991-06-15 AD	0.000023	
+5	United States Mount St. Helens	Cascade Volcanic Arc	1980-05-18 AD	0.000034	
+6	United States Novarupta	Aleutian Range	1912-06-06 AD	0.000112
