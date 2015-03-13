@@ -12,8 +12,8 @@ def parse_data():
 			values = row.split('\t')
 			count += 1;
 
-			if values[0] == 'volcano':
-				
+			if values[0] == 'volcano' or values[0] == 'volcanos':
+				print values
 
 		print count
 
