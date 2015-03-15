@@ -21,7 +21,6 @@ def get_volcano_years():
 
         
 def import_data():
-    total_yrs = 1+ end_yr - begin_yr
     word_count = len(words)
     data = np.zeros((total_yrs, word_count))
     with open('word_data.csv', 'rb') as fp:
@@ -37,9 +36,10 @@ def import_data():
 #Direction (boolean): True: Train data cut from ealier, False: Train data cut from later in history
 #Years: 
 def sample_cut(years, data, percent, direction):
-    targetVector = yearToTargetVector(years)
-    
-    #tmp = np.append(targetVector, 
+    targetVector = yearToTargetVector(years)    
+    tv = np.array([targetVector.tolist()])
+    temp = np.concatenate((tv.T, data), axis = 1)
+
     cut = int(percent*data.shape[0])
     
     if direction:
@@ -61,15 +61,18 @@ def yearToTargetVector(years):
         tmp[1+year-begin_yr] = 1
     return tmp
 
+def yearsToTargetVector(years):
+    tmp = []
+    for i in range(total_yrs):
+        if i+begin_yr in years:
+            tmp.append([1])
+        else:
+            tmp.append([0])
+    return tmp
+
 def sample_random(data, percent, direction):
-    cut = int(percent*data.shape[0])
-    if (direction):
-        train = data[:cut]
-        test = data[cut:]
-    else:
-        train = data[cut:]
-        test = data[:cut]
-    return train, test
+    #TODO:
+    return 0
 
 def train_model(train_matrix, target_vector):
     
