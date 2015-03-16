@@ -44,8 +44,8 @@ def import_data():
 #Years: 
 def sample_cut(years, data, percent, direction, shift_amt):
     targetVector = yearToTargetVector(years, shift_amt)    
-    tv = np.array([targetVector.tolist()])
-    temp = np.concatenate((tv.T, data), axis = 1)
+    #tv = np.array([targetVector.tolist()])
+    #temp = np.concatenate((tv.T, data), axis = 1)
 
     cut = int(percent*data.shape[0])
     
@@ -116,9 +116,10 @@ def test_model(classifier, test_matrix, target_vector):
             else:
                 FP += 1
                 #print False
-    if TP + FP == 0:
-        print "\tNONE\t"+str(classifier)[:10]        
-    else:    
+    if TP + FP == 0 or TP == 0:
+        #print "\tNONE\t"+str(classifier)[:10]        
+        0
+    elif float(TP)/(TP+FP) > 0.7:    
         print "\t"+ str(float(TP)/(TP+FP))+"\t"+str(classifier)[:10]
             
 
@@ -132,8 +133,8 @@ def shift(amount, data, years):
 
 				
 
-def spray_n_pray(data, years):
-    for i in range(3):
+def spray_n_pray(master_data, master_years):
+    for i in range(10):
         print "Shifting by: "+str(i)
         data, years = shift(i, master_data, master_years)
     
@@ -161,11 +162,22 @@ def spray_n_pray(data, years):
                 accuracy = test_model(classifier, test, test_target)
             percentage += 0.05
 
+def specific(master_data, master_years):
+    data, years = shift(6, master_data, master_years)
+    train, train_target, test, test_target = sample_cut(years, data, 0.75, True, 1)
+    classifier_choice = linear_model.SGDClassifier()
+    classifier = train_model(train, train_target, classifier_choice)
+    accuracy = test_model(classifier, test, test_target)
+    
+def specific2(master_data, master_years):
+    data, years = shift(6, master_data, master_years)
+    train, train_target, test, test_target = sample_cut(years, data, 0.5, True, 1)
+    classifier_choice = linear_model.Perceptron(penalty='l1')
+    classifier = train_model(train, train_target, classifier_choice)
+    accuracy = test_model(classifier, test, test_target)
+
 master_years = get_volcano_years()
 master_data = import_data()
-            
-data, years = shift(1, master_data, master_years)
-train, train_target, test, test_target = sample_cut(years, data, 0.55, True, 1)
-classifier_choice = RandomForestClassifier(n_estimators=10)
-classifier = train_model(train, train_target, classifier_choice)
-accuracy = test_model(classifier, test, test_target)
+#specific(master_data, master_years)
+#specific2(master_data, master_years)
+spray_n_pray(master_data, master_years)
