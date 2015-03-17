@@ -14,7 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import train_test_split
     
 begin_yr = 1750
-end_yr = 2008
+end_yr = 2000
 total_yrs = 1 + end_yr - begin_yr
 words = dp.feature_words
 
