@@ -2,6 +2,7 @@ import csv
 import dateutil.parser as p
 import numpy as np
 import data_prep as dp
+from random import randint
 from sklearn import preprocessing
 from sklearn import linear_model
 from sklearn import preprocessing
@@ -13,8 +14,8 @@ from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import train_test_split
     
-begin_yr = 1750
-end_yr = 2000
+begin_yr = 1780
+end_yr = 2008
 total_yrs = 1 + end_yr - begin_yr
 words = dp.feature_words
 
@@ -84,7 +85,7 @@ def yearsToTargetVector(years):
 
 def sample_random(years, data, percent, direction, shift_amt):
     targetVector = yearToTargetVector(years, shift_amt)   
-    train, test, train_target, test_target = train_test_split(data, targetVector, test_size=percent, random_state=41)
+    train, test, train_target, test_target = train_test_split(data, targetVector, test_size=percent, random_state=randint(1,50))
 
     return train, train_target, test, test_target
 
@@ -126,7 +127,7 @@ def test_model(classifier, test_matrix, target_vector):
         0
     #elif float(TP)/(TP+FP) > 0.7:    
     else:
-        print "\t"+ str(float(TP)/(TP+FP))+"\t"+str(classifier)[:10]
+        print "\t"+ str(float(TP)/(TP+FP))[:5]+"\t"+str(classifier)[:10]
             
 
 def shift(amount, data, years):
@@ -140,7 +141,7 @@ def shift(amount, data, years):
 				
 
 def spray_n_pray(master_data, master_years):
-    for i in range(5):
+    for i in range(6):
         print "Shifting by: "+str(i)
         data, years = shift(i, master_data, master_years)
     
@@ -171,6 +172,7 @@ def spray_n_pray(master_data, master_years):
                     0
             percentage += 0.05
 
+#Methods to sample specific classification setups
 def specific(master_data, master_years):
     shift_amt = 6
     data, years = shift(shift_amt, master_data, master_years)
