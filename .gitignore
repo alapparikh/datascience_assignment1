@@ -8,3 +8,5 @@ googlebooks-eng-all-1gram-20120701-m
 .DS_Store
 googlebooks-eng-all-totalcounts-20120701.txt
 analysis.pyc
+testing.py
+data_prep.pyc
