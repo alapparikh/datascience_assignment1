@@ -11,10 +11,11 @@ from sklearn import neighbors
 from sklearn.lda import LDA
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
-
+from sklearn.cross_validation import train_test_split
+    
 begin_yr = 1751
 end_yr = 2008
-total_yrs = 1+ end_yr - begin_yr
+total_yrs = 1 + end_yr - begin_yr
 words = dp.feature_words
 
 def get_volcano_years():
@@ -23,7 +24,6 @@ def get_volcano_years():
         reader = csv.reader(fp, delimiter='\t')
         for row in reader:
             years.append(p.parse(row[3]).year)
-            #print p.parse(row[3]).year
     return years
 
         
@@ -46,7 +46,6 @@ def sample_cut(years, data, percent, direction, shift_amt):
     targetVector = yearToTargetVector(years, shift_amt)    
     #tv = np.array([targetVector.tolist()])
     #temp = np.concatenate((tv.T, data), axis = 1)
-
     cut = int(percent*data.shape[0])
     
     if direction:
@@ -65,7 +64,10 @@ def sample_cut(years, data, percent, direction, shift_amt):
 def yearToTargetVector(years, shift_amt):
     tmp = np.zeros(total_yrs-shift_amt)
     for year in years:
-        tmp[1+year-begin_yr] = 1
+
+        tmp[year-begin_yr-shift_amt] = 1
+        #print len(tmp)
+        #print year, begin_yr, year-begin_yr-1, total_yrs-shift_amt
     return tmp
 
 def yearsToTargetVector(years):
@@ -77,9 +79,11 @@ def yearsToTargetVector(years):
             tmp.append([0])
     return tmp
 
-def sample_random(data, percent, direction):
-    #TODO:
-    return 0
+def sample_random(years, data, percent, direction, shift_amt):
+    targetVector = yearToTargetVector(years, shift_amt)   
+    train, test, train_target, test_target = train_test_split(data, targetVector, test_size=percent, random_state=42)
+
+    return train, train_target, test, test_target
 
 def train_model(train_matrix, target_vector, classifier):
     
@@ -90,8 +94,6 @@ def train_model(train_matrix, target_vector, classifier):
     #Fit logistic regression model
     classifier.fit(scaled_features,target_vector)
     
-
-
     return classifier
 
 def test_model(classifier, test_matrix, target_vector):
@@ -119,7 +121,8 @@ def test_model(classifier, test_matrix, target_vector):
     if TP + FP == 0 or TP == 0:
         #print "\tNONE\t"+str(classifier)[:10]        
         0
-    elif float(TP)/(TP+FP) > 0.7:    
+    #elif float(TP)/(TP+FP) > 0.7:    
+    else:
         print "\t"+ str(float(TP)/(TP+FP))+"\t"+str(classifier)[:10]
             
 
@@ -127,23 +130,23 @@ def shift(amount, data, years):
     new_data = data[amount:]
     new_years = []
     for year in years:
-        if year+amount <= end_yr:
+        if year+amount < end_yr:
             new_years.append(year+amount)
     return new_data, new_years
 
 				
 
 def spray_n_pray(master_data, master_years):
-    for i in range(10):
+    for i in range(11):
         print "Shifting by: "+str(i)
         data, years = shift(i, master_data, master_years)
     
     
         #print data[words.index('volcanos'), 1756-begin_yr]
-        percentage  = 0.3
-        while percentage <= 1.0:
+        percentage  = 0.5
+        while percentage < 0.9:
             print "    Percentage "+str(percentage)
-            train, train_target, test, test_target = sample_cut(years, data, percentage, True, i)
+            train, train_target, test, test_target = sample_random(years, data, percentage, True, i)
             
             classifiers = [linear_model.LogisticRegression(penalty='l2',dual=False), 
             linear_model.SGDClassifier(),
@@ -154,7 +157,7 @@ def spray_n_pray(master_data, master_years):
             neighbors.KNeighborsClassifier(),
             LDA(),
             tree.DecisionTreeClassifier(),
-            RandomForestClassifier(n_estimators=10)]
+            RandomForestClassifier(n_estimators=3)]
                 
             for classifier_choice in classifiers:
                 #print classifier_choice
@@ -163,21 +166,38 @@ def spray_n_pray(master_data, master_years):
             percentage += 0.05
 
 def specific(master_data, master_years):
-    data, years = shift(6, master_data, master_years)
-    train, train_target, test, test_target = sample_cut(years, data, 0.75, True, 1)
+    shift_amt = 6
+    data, years = shift(shift_amt, master_data, master_years)
+    train, train_target, test, test_target = sample_cut(years, data, 0.75, True, shift_amt)
     classifier_choice = linear_model.SGDClassifier()
     classifier = train_model(train, train_target, classifier_choice)
     accuracy = test_model(classifier, test, test_target)
     
 def specific2(master_data, master_years):
-    data, years = shift(6, master_data, master_years)
-    train, train_target, test, test_target = sample_cut(years, data, 0.5, True, 1)
+    shift_amt = 0
+    data, years = shift(shift_amt, master_data, master_years)
+    train, train_target, test, test_target = sample_cut(years, data, 0.5, True, shift_amt)
     classifier_choice = linear_model.Perceptron(penalty='l1')
     classifier = train_model(train, train_target, classifier_choice)
     accuracy = test_model(classifier, test, test_target)
+
+def specific3(master_data, master_years):
+    shift_amt = 0
+    data, years = shift(shift_amt, master_data, master_years)
+    ratio = 0.3
+    while ratio < 0.95:
+        print ratio
+        train, train_target, test, test_target = sample_cut(years, data, ratio, True, shift_amt)
+        classifier_choice = linear_model.LogisticRegression(penalty='l2',dual=False)
+        classifier = train_model(train, train_target, classifier_choice)
+        accuracy = test_model(classifier, test, test_target)
+        ratio += 0.01
+
+
 
 master_years = get_volcano_years()
 master_data = import_data()
 #specific(master_data, master_years)
 #specific2(master_data, master_years)
+#specific3(master_data, master_years)
 spray_n_pray(master_data, master_years)
