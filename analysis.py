@@ -13,7 +13,7 @@ from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import train_test_split
     
-begin_yr = 1751
+begin_yr = 1750
 end_yr = 2008
 total_yrs = 1 + end_yr - begin_yr
 words = dp.feature_words
@@ -34,7 +34,10 @@ def import_data():
         reader = csv.reader(fp, delimiter='\t')
         for row in reader:
             #print row
-            data[int(row[1])-begin_yr, words.index(row[0])] = row[2]
+            if int(row[1]) < begin_yr or int(row[1]) > end_yr:
+                continue
+            else:
+                data[int(row[1])-begin_yr, words.index(row[0])] = row[2]
     return data
     
     
@@ -81,7 +84,7 @@ def yearsToTargetVector(years):
 
 def sample_random(years, data, percent, direction, shift_amt):
     targetVector = yearToTargetVector(years, shift_amt)   
-    train, test, train_target, test_target = train_test_split(data, targetVector, test_size=percent, random_state=42)
+    train, test, train_target, test_target = train_test_split(data, targetVector, test_size=percent, random_state=41)
 
     return train, train_target, test, test_target
 
@@ -137,7 +140,7 @@ def shift(amount, data, years):
 				
 
 def spray_n_pray(master_data, master_years):
-    for i in range(11):
+    for i in range(5):
         print "Shifting by: "+str(i)
         data, years = shift(i, master_data, master_years)
     
@@ -161,8 +164,11 @@ def spray_n_pray(master_data, master_years):
                 
             for classifier_choice in classifiers:
                 #print classifier_choice
-                classifier = train_model(train, train_target, classifier_choice)
-                accuracy = test_model(classifier, test, test_target)
+                try:
+                    classifier = train_model(train, train_target, classifier_choice)
+                    accuracy = test_model(classifier, test, test_target)
+                except:
+                    0
             percentage += 0.05
 
 def specific(master_data, master_years):
